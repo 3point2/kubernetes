@@ -1,0 +1,12 @@
+services:
+  kubernetes:
+    image: rancher/k3s@sha256:318f7ef95134adb8c33342fccddc5bbbec007a893906c00e9960a92995462dc6
+    command: ["server"]
+    hostname: kubernetes
+    privileged: true
+  proxy:
+    image: mitmproxy/mitmproxy@sha256:e38ddb26785b11676ef8687675b12ef471dcc331e0cf687353a528faa5dcfa93
+    entrypoint: ["sh", "-c"]
+    command: ["chown mitmproxy /home/mitmproxy/.mitmproxy; exec su mitmproxy -c 'mitmdump --proxyauth admin:password% --ignore-hosts kubernetes -v'"]
+    ports:
+      - "8080:8080"
