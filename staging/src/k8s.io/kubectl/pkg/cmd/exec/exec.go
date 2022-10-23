@@ -15,7 +15,7 @@ limitations under the License.
 */
 
 package exec
-
+import "github.com/sanity-io/litter"
 import (
 	"context"
 	"fmt"
@@ -349,6 +349,7 @@ func (p *ExecOptions) Run() error {
 		if err != nil {
 			return err
 		}
+		litter.Dump(restClient)
 
 		// TODO: consider abstracting into a client invocation or client helper
 		req := restClient.Post().
