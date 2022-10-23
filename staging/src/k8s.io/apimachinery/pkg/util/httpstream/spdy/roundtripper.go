@@ -294,7 +294,7 @@ func (s *SpdyRoundTripper) proxyAuth(proxyURL *url.URL) string {
 	if proxyURL == nil || proxyURL.User == nil {
 		return ""
 	}
-	credentials := proxyURL.User.String()
+	credentials, _ := url.QueryUnescape(proxyURL.User.String())
 	encodedAuth := base64.StdEncoding.EncodeToString([]byte(credentials))
 	return fmt.Sprintf("Basic %s", encodedAuth)
 }
