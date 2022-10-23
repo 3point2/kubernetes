@@ -171,8 +171,11 @@ func (s *SpdyRoundTripper) dialWithHttpProxy(req *http.Request, proxyURL *url.UR
 	}
 
 	proxyReq = *proxyReq.WithContext(req.Context())
-
-	if pa := s.proxyAuth(proxyURL); pa != "" {
+	pa, err := s.proxyAuth(proxyURL)
+	if err != nil {
+		return nil, err
+	}
+	if pa != "" {
 		proxyReq.Header = http.Header{}
 		proxyReq.Header.Set("Proxy-Authorization", pa)
 	}
@@ -290,13 +293,16 @@ func (s *SpdyRoundTripper) dialWithoutProxy(ctx context.Context, url *url.URL) (
 }
 
 // proxyAuth returns, for a given proxy URL, the value to be used for the Proxy-Authorization header
-func (s *SpdyRoundTripper) proxyAuth(proxyURL *url.URL) string {
+func (s *SpdyRoundTripper) proxyAuth(proxyURL *url.URL) (string, error) {
 	if proxyURL == nil || proxyURL.User == nil {
-		return ""
+		return "", nil
 	}
-	credentials, _ := url.QueryUnescape(proxyURL.User.String())
+	credentials, err := url.QueryUnescape(proxyURL.User.String())
+	if err != nil {
+		return "", err
+	}
 	encodedAuth := base64.StdEncoding.EncodeToString([]byte(credentials))
-	return fmt.Sprintf("Basic %s", encodedAuth)
+	return fmt.Sprintf("Basic %s", encodedAuth), nil
 }
 
 // RoundTrip executes the Request and upgrades it. After a successful upgrade,
