@@ -1,7 +1,7 @@
 services:
   kubernetes:
     image: rancher/k3s@sha256:318f7ef95134adb8c33342fccddc5bbbec007a893906c00e9960a92995462dc6
-    command: ["server"]
+    command: ["server", "--bind-address", "kubernetes"]
     hostname: kubernetes
     privileged: true
   proxy:
